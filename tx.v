@@ -1,4 +1,4 @@
-module tx (clock, botao, dado, instrucao, out, countDebug, stateDebug, nextStateDebug);
+module tx (clock, botao, dado, instrucao, out);
     
     input clock, botao;
     input [3:0] instrucao, dado;
@@ -7,15 +7,9 @@ module tx (clock, botao, dado, instrucao, out, countDebug, stateDebug, nextState
     reg [3:0] counter = 4'd0;
     reg [1:0] state, nextState;
     reg [3:0] tempo, A, B;
-    output reg [3:0] countDebug;
-    output reg [1:0] stateDebug, nextStateDebug;
-
-    initial countDebug = 0;
 
     always @(posedge clock) begin
         state <= nextState;
-        stateDebug <= state;
-        nextStateDebug <= nextState;
     end
 
     always @(posedge clock) begin
@@ -56,7 +50,6 @@ module tx (clock, botao, dado, instrucao, out, countDebug, stateDebug, nextState
                         9: out <= 1;
                     endcase
                     counter = counter + 1;
-                    countDebug = counter;
                 end
                 else nextState <= verificar;
             end 

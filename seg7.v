@@ -1,5 +1,5 @@
 module seg7(in, out1, out2, clear);
-    input verif;
+    input clear;
     input [3:0] in;
     output reg [6:0] out1, out2;
 

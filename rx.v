@@ -1,47 +1,19 @@
-module rx (instrucao, dado, clock, led, dec7Seg, clear);
+module rx (clock, in, LEDS, unidade, dezena);
+    input clock, in;
+    output [7:0] LEDS;
+    output [6:0] unidade, dezena;
 
-    input clock;
-    input [3:0] instrucao, dado;
+    wire [3:0] dado_uart, instrucao_uart, dec7Seg; 
+    wire [7:0] led;
+    wire [6:0] out1, out2;
+    wire clear;
 
-    output reg clear = 0;
-    output reg [3:0] dec7Seg;
-    output reg [7:0] led;
+    uart UART(in, dado_uart, instrucao_uart, clock);
+    tratar TRATAR(instrucao_uart, dado_uart, clock, led, dec7Seg, clear);
+    seg7 SEG(dec7Seg, out1, out2, clear);
 
-    reg [2:0] state, nextState;
-    reg [3:0] guardado;
-    
-    parameter uart = 0, limpar = 1, carregar = 2, mostrar = 3;
-
-    always @(posedge clock) begin
-        state <= nextState;
-    end
-
-    always @(posedge clock) begin
-        case (state)
-            uart: begin
-                case (instrucao)
-                    1: nextState = limpar;
-                    2: nextState = carregar; 
-                    4: nextState = mostrar;
-                endcase
-            end 
-            
-            limpar: begin
-                clear <= 1;
-                nextState = uart;
-            end
-
-            carregar: begin
-                guardado <= dado;
-                nextState = uart;
-            end
-
-            mostrar: begin
-                dec7Seg <= guardado;
-                nextState = uart;
-            end
-        endcase
-        led = {dado, instrucao};
-    end
+    assign LEDS = led;
+    assign unidade = out1;
+    assign dezena = out2;
     
 endmodule
