@@ -34,11 +34,13 @@ module tratar (instrucao, dado, clock, led, dec7Seg, clear);
             carregar: begin
                 guardado <= dado;
                 nextState = uart;
+                clear <= 0;
             end
 
             mostrar: begin
                 dec7Seg <= guardado;
                 nextState = uart;
+                clear <= 0;
             end
         endcase
         led = {instrucao, dado};
