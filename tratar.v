@@ -10,7 +10,7 @@ module tratar (instrucao, dado, clock, led, dec7Seg, clear);
     reg [2:0] state, nextState;
     reg [3:0] guardado;
     
-    parameter uart = 0, limpar = 1, carregar = 2, mostrar = 3;
+    parameter uart = 0, limpar = 1, carregar = 2, mostrar = 4;
 
     always @(posedge clock) begin
         state <= nextState;
@@ -20,9 +20,9 @@ module tratar (instrucao, dado, clock, led, dec7Seg, clear);
         case (state)
             uart: begin
                 case (instrucao)
-                    1: nextState = limpar;
-                    2: nextState = carregar; 
-                    4: nextState = mostrar;
+                    limpar: nextState = limpar;
+                    carregar: nextState = carregar; 
+                    mostrar: nextState = mostrar;
                 endcase
             end 
             
@@ -41,7 +41,7 @@ module tratar (instrucao, dado, clock, led, dec7Seg, clear);
                 nextState = uart;
             end
         endcase
-        led = {dado, instrucao};
+        led = {instrucao, dado};
     end
     
 endmodule

@@ -1,24 +1,23 @@
-module uart (in, dado, instrucao, clock);
+module uart (in, dado, instrucao, clock, uat);
     input in, clock;
     output reg [3:0] dado, instrucao;
-    reg [1:0] state, nextState;
+    output reg uat;
+    reg [1:0] state;
     reg [3:0] tempo;
     parameter idle = 0, atribucao = 1;
 
-    always @(posedge clock) begin
-        state <= nextState;
-    end
-
     always @(posedge clock) begin  
         case (state)
-            0: begin
+            idle: begin
+                uat <= in;
                 if (~in) 
-                    nextState <= atribucao;   
+                    state <= atribucao;   
                 else 
-                    nextState <= idle;
+                    state <= idle;
             end
 
-            1: begin
+            atribucao: begin
+                uat <= in;
                 case (tempo)
                     0: dado[0] <= in;
                     1: dado[1] <= in;
@@ -28,14 +27,13 @@ module uart (in, dado, instrucao, clock);
                     5: instrucao[1] <= in;
                     6: instrucao[2] <= in;
                     7: instrucao[3] <= in;
-                    default: begin
-                        nextState <= idle;
-                        tempo = 0;
-                    end
                 endcase
                 tempo = tempo + 1;
+                if (tempo == 8) begin 
+                    state <= idle;  
+                    tempo = 0;
+                end
             end
         endcase
     end
-
 endmodule
